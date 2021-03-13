@@ -5,11 +5,6 @@ from matplotlib.collections import PatchCollection
 import numpy as np
 from scipy import stats
 
-matchDay = 8
-season = 87
-
-averages = {'A': 0.728, 'B': 0.608, 'C': 0.490, 'D': .377, 'E': .298, 'R': .391}
-
 
 def main(season=88, matchDay=15, data=None, ax=None):
     if not data:
@@ -49,12 +44,6 @@ def main(season=88, matchDay=15, data=None, ax=None):
                 histtype='step', linewidth=0.75, align='mid', color='C' + str(rundles.index(r)))
         # ax.hist(dDiv['QPct'], bins=np.linspace(0, 1, matchDay * 6), cumulative=True, density=True, label='Rundle ' +
         #  r + ' Mesa', histtype='step', linewidth=1, linestyle=':', align='mid', color='C' + str(rundles.index(r)))
-
-    """
-    # Plot the average mesa performance of each rundle
-    for rundle in averages:
-        ax.scatter(averages[rundle],0.5, color='C'+str(rundles.index(rundle)))
-    """
 
     # Plot individuals on their rundle's percentile curve, along with a vertical line to show how they'd do in other
     # rundles
@@ -101,15 +90,6 @@ def main(season=88, matchDay=15, data=None, ax=None):
     # plt.savefig(title+'.png', dpi=200)
 
     return data
-
-
-def loop():
-    for matchDay in range(9, 17):
-        plt.figure()
-        title = 'LL84 Leaguewide MD' + str(matchDay)
-        path = 'LL84_Leaguewide_' + title.split(' ')[-1] + '.csv'
-        data = pd.read_csv(path, encoding='ISO-8859-1', index_col=2)
-        main(data, matchDay=matchDay)
 
 
 def DE(data):
