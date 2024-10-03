@@ -22,9 +22,11 @@ def index():
     img_base64 = main.main(season=102, matchDay=25, pals=players)
 
     img_data = f"data:image/png;base64,{img_base64}"
+
     return render_template('index.html', img_data=img_data)
 
 
 if __name__ == '__main__':
     port = int(environ.get("PORT", 5000))  # Use the port from environment variable, default to 5000
     app.run(host='0.0.0.0', port=port)
+    # app.run(debug=True)

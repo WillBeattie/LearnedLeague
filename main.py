@@ -13,44 +13,74 @@ from scipy import stats
 import argparse
 
 
-def main(season=88, matchDay=15, data=None, ax=None, pals=None):
-    if not data:
-        title = 'LL' + str(season) + ' Leaguewide MD' + str(matchDay)
-        path = 'LL' + str(season) + '_Leaguewide_' + title.split(' ')[-1] + '.csv'
-        try:
-            data = pd.read_csv(path, encoding='ISO-8859-1', index_col=2)
-        except FileNotFoundError:
-            try:
-                data = pd.read_csv('./res/' + path, encoding='ISO-8859-1', index_col=2)
-            except FileNotFoundError:
-                print(f'File {path} not found')
-                return
+def load_csv(season, matchDay):
+    title = 'LL' + str(season) + ' Leaguewide MD' + str(matchDay)
+    path = 'LL' + str(season) + '_Leaguewide_' + title.split(' ')[-1] + '.csv'
+    try:
+        data = pd.read_csv('./res/' + path, encoding='ISO-8859-1', index_col=2)
+        return data
+    except FileNotFoundError:
+        print(f'File {path} not found')
+        return pd.DataFrame()
 
-    if ax is None:
-        fig, ax = plt.subplots(1, 1, figsize=(12, 7))
 
-    # Plot a league-wide histogram
-    ax.hist(data['QPct'], bins=np.linspace(0, 1, matchDay * 6), cumulative=True, density=True, histtype='step',
+def prep_resources(season, matchDay):
+    # Prepare the reduced dataframe
+    df = load_csv(season, matchDay)
+    df = df[['Rundle', 'QPct']]
+    df.to_csv(f'res/{season}-{matchDay}-filtered_df.csv')
+
+    # Prepare the base figure
+
+    fig, ax = plt.subplots(1, 1, figsize=(12, 7))
+
+    ax.hist(df['QPct'], bins=np.linspace(0, 1, matchDay * 6), cumulative=True, density=True, histtype='step',
             label='All', color='black', linewidth=2, align='right')
 
     rundles = ['A', 'B', 'C', 'D', 'E', 'R']
     rData = []
     rDivData = []
     for rundle in rundles:
-        run = data['Rundle']
+        run = df['Rundle']
 
         inRundle = [x[0] == rundle for x in run]
-        rData.append(data[inRundle])
+        rData.append(df[inRundle])
 
         inRundleDiv = [x[:6] == rundle + ' Mesa' for x in run]
-        rDivData.append(data[inRundleDiv])
+        rDivData.append(df[inRundleDiv])
+
+    # Dump rundle-specific QPct lists for later histogram use
+    pickle.dump(rData, open(f'res/{season}-{matchDay}-rundle_data.p', 'wb'))
 
     # Plot rundle-specific histograms
     for r, d, dDiv in zip(rundles, rData, rDivData):
         ax.hist(d['QPct'], bins=np.linspace(0, 1, matchDay * 6), cumulative=True, density=True, label='Rundle ' + r,
                 histtype='step', linewidth=0.75, align='mid', color='C' + str(rundles.index(r)))
-        # ax.hist(dDiv['QPct'], bins=np.linspace(0, 1, matchDay * 6), cumulative=True, density=True, label='Rundle ' +
-        #  r + ' Mesa', histtype='step', linewidth=1, linestyle=':', align='mid', color='C' + str(rundles.index(r)))
+
+    plt.savefig(f'res/{season}-{matchDay}-basefigure.png', dpi=200)
+
+    pickle.dump(fig, open(f'res/{season}-{matchDay}-basefig.p', 'wb'))
+
+
+def main(season=88, matchDay=15, data=None, pals=None):
+    try:
+        base_fig = pickle.load(open(f'res/{season}-{matchDay}-basefig.p', 'rb'))
+        rData = pickle.load(open(f'res/{season}-{matchDay}-rundle_data.p', 'rb'))
+        data = pd.read_csv(f'res/{season}-{matchDay}-filtered_df.csv', index_col=0)
+        ax = base_fig.axes[0]
+
+    except FileNotFoundError:
+        print('Resources not found')
+        print(f'res/{season}-{matchDay}-basefig.p')
+        print(f'res/{season}-{matchDay}-rundle_data.p')
+        print(f'res/{season}-{matchDay}-filtered_df.csv')
+
+        prep_resources(season, matchDay)
+        return
+
+    print(data.head())
+    print(data.index.values[:5])
+    rundles = ['A', 'B', 'C', 'D', 'E', 'R']
 
     # Plot individuals on their rundle's percentile curve, along with a vertical line to show how they'd do in other
     # rundles
@@ -123,7 +153,7 @@ def main(season=88, matchDay=15, data=None, ax=None, pals=None):
     plt.tight_layout()
     img_io = io.BytesIO()
 
-    fig.savefig(img_io, format='png', dpi=200)
+    base_fig.savefig(img_io, format='png', dpi=200)
     img_io.seek(0)
     img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
     plt.close()
@@ -147,4 +177,4 @@ if __name__ == "__main__":
     parser.add_argument('--day', '-d', type=int)
     args = parser.parse_args()
     print(args.season, args.day)
-    main(season=args.season, matchDay=args.day)
+    prep_resources(season=args.season, matchDay=args.day)
