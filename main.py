@@ -2,6 +2,8 @@ import base64
 import io
 import pickle
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
@@ -83,10 +85,8 @@ def main(season=88, matchDay=15, data=None, ax=None, pals=None):
         return [(0, char.lower()) if char.isalpha() else (1, char) for char in s]
 
     active_players = sorted(active_players, key=alphanum_key)
-    print('Alphabetic', active_players)
 
     active_players = sorted(active_players, key=lambda x: (data.loc[x, 'Rundle'], alphanum_key(x)))
-    print('Rundle First', active_players)
     for i, pal in enumerate(active_players):
         myRundle = data.loc[pal]['Rundle'][0]
         myRundleData = rData[rundles.index(myRundle)]
@@ -94,7 +94,6 @@ def main(season=88, matchDay=15, data=None, ax=None, pals=None):
         myPercent = 0.01 * stats.percentileofscore(myRundleData['QPct'].to_list(), myScore, kind='weak')
         ax.scatter(myScore, myPercent, color='C' + str(rundles.index(myRundle)), marker=pals[pal], label=pal, s=200)
         ax.axvline(myScore, color='C' + str(rundles.index(myRundle)), alpha=0.35, linestyle=':')
-        print(pal, round(myScore, 3), round(data['QPct'][pal], 3), round(myPercent, 3))
 
     # Patches indicating relegation and promotion
     ps = [Rectangle((0, 0), 1, 0.2, color='red'), Rectangle((0, 0.8), 1, 0.2, color='green')]

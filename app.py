@@ -10,17 +10,18 @@ def index():
         players = [request.form.get(f'player{i}') for i in range(1, 11)]
         players = [p for p in players if p]
         if players is None:
-            return "Error: No Input Provided", 400
-        else:
-            print(f'Received input: {players}')
-        img_base64 = main.main(season=102, matchDay=25, pals=players)
+            players = ['BeattieW', 'GrekL', 'GrekF', 'QuinlanK', 'GeorgasP', 'ReynenG', 'JainA1933', 'FoxA6', 'MillsH',
+                       'ThompsonA5', 'BaechlerC', 'deGrootD', 'JenningsK']
 
-        img_data = f"data:image/png;base64,{img_base64}"
-        print(f'Length of Input IMG_data: {len(img_data)}')
-
-        return render_template('index.html', img_data=img_data)
     else:
-        return render_template('index.html')
+        # Default behaviour for page load
+        players = ['BeattieW', 'GrekL', 'GrekF', 'QuinlanK', 'GeorgasP', 'ReynenG', 'JainA1933', 'FoxA6', 'MillsH',
+                   'ThompsonA5', 'BaechlerC', 'deGrootD', 'JenningsK']
+
+    img_base64 = main.main(season=102, matchDay=25, pals=players)
+
+    img_data = f"data:image/png;base64,{img_base64}"
+    return render_template('index.html', img_data=img_data)
 
 
 if __name__ == '__main__':
