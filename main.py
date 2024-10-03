@@ -28,10 +28,12 @@ def prep_resources(season, matchDay):
     # Prepare the reduced dataframe
     df = load_csv(season, matchDay)
     df = df[['Rundle', 'QPct']]
+    df['Rundle Group'] = df['Rundle'].str[0]
+    df['Percentile'] = df.groupby('Rundle Group')['QPct'].rank(pct=True)
+
     df.to_csv(f'res/{season}-{matchDay}-filtered_df.csv')
 
     # Prepare the base figure
-
     fig, ax = plt.subplots(1, 1, figsize=(12, 7))
 
     ax.hist(df['QPct'], bins=np.linspace(0, 1, matchDay * 6), cumulative=True, density=True, histtype='step',
@@ -39,21 +41,14 @@ def prep_resources(season, matchDay):
 
     rundles = ['A', 'B', 'C', 'D', 'E', 'R']
     rData = []
-    rDivData = []
+
     for rundle in rundles:
         run = df['Rundle']
-
         inRundle = [x[0] == rundle for x in run]
         rData.append(df[inRundle])
 
-        inRundleDiv = [x[:6] == rundle + ' Mesa' for x in run]
-        rDivData.append(df[inRundleDiv])
-
-    # Dump rundle-specific QPct lists for later histogram use
-    pickle.dump(rData, open(f'res/{season}-{matchDay}-rundle_data.p', 'wb'))
-
     # Plot rundle-specific histograms
-    for r, d, dDiv in zip(rundles, rData, rDivData):
+    for r, d in zip(rundles, rData):
         ax.hist(d['QPct'], bins=np.linspace(0, 1, matchDay * 6), cumulative=True, density=True, label='Rundle ' + r,
                 histtype='step', linewidth=0.75, align='mid', color='C' + str(rundles.index(r)))
 
@@ -65,21 +60,17 @@ def prep_resources(season, matchDay):
 def main(season=88, matchDay=15, data=None, pals=None):
     try:
         base_fig = pickle.load(open(f'res/{season}-{matchDay}-basefig.p', 'rb'))
-        rData = pickle.load(open(f'res/{season}-{matchDay}-rundle_data.p', 'rb'))
         data = pd.read_csv(f'res/{season}-{matchDay}-filtered_df.csv', index_col=0)
         ax = base_fig.axes[0]
 
     except FileNotFoundError:
         print('Resources not found')
         print(f'res/{season}-{matchDay}-basefig.p')
-        print(f'res/{season}-{matchDay}-rundle_data.p')
         print(f'res/{season}-{matchDay}-filtered_df.csv')
 
         prep_resources(season, matchDay)
         return
 
-    print(data.head())
-    print(data.index.values[:5])
     rundles = ['A', 'B', 'C', 'D', 'E', 'R']
 
     # Plot individuals on their rundle's percentile curve, along with a vertical line to show how they'd do in other
@@ -107,7 +98,7 @@ def main(season=88, matchDay=15, data=None, pals=None):
                 'JainA1933': r'$\$$',
                 }
     else:
-        ucs = [[char for char in pal if char.isupper()] for pal in pals]
+        ucs = [[char for char in pal if char.isupper()] for pal in pals if pal in list(data.index.values)]
         pals = {p: f'${U[0]}_{U[1]}$' for p, U in zip(pals, ucs)}
 
     active_players = [p for p in pals.keys() if p in list(data.index.values)]
@@ -117,12 +108,12 @@ def main(season=88, matchDay=15, data=None, pals=None):
 
     active_players = sorted(active_players, key=alphanum_key)
 
-    active_players = sorted(active_players, key=lambda x: (data.loc[x, 'Rundle'], alphanum_key(x)))
+    active_players = sorted(active_players, key=lambda x: (data.loc[x, 'Rundle Group'], alphanum_key(x)))
     for i, pal in enumerate(active_players):
-        myRundle = data.loc[pal]['Rundle'][0]
-        myRundleData = rData[rundles.index(myRundle)]
+        myRundle = data['Rundle Group'][pal]
         myScore = data['QPct'][pal]
-        myPercent = 0.01 * stats.percentileofscore(myRundleData['QPct'].to_list(), myScore, kind='weak')
+        myPercent = data['Percentile'][pal]
+
         ax.scatter(myScore, myPercent, color='C' + str(rundles.index(myRundle)), marker=pals[pal], label=pal, s=200)
         ax.axvline(myScore, color='C' + str(rundles.index(myRundle)), alpha=0.35, linestyle=':')
 
