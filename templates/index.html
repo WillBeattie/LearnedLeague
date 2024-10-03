@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learned League Llama Plotter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+        }
+
+        #image-container {
+            width: 100%;
+            margin: 5px 0;
+            max-width: 1500px;
+            text-align: center;
+        }
+
+        #input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        img {
+            max-width: 100%; /* Ensures the image scales down on smaller screens */
+            height: auto;
+            padding: 2px;
+        }
+
+        .input-box {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 600px){
+            .input-box {
+                width: calc(50% - 10px);
+            }
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            align: center;
+        }
+
+        #button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<h1> LearnedLeague Performance Plotter</h1>
+<form id="dynamicForm" method="POST">
+    <div id="input-container">
+        <input type="text" name="player1" placeholder="Enter Player Name(s)">
+        <input type="text" name="player2">
+        <input type="text" name="player3">
+        <input type="text" name="player4">
+        <input type="text" name="player5">
+        <input type="text" name="player6">
+        <input type="text" name="player7">
+        <input type="text" name="player8">
+        <input type="text" name="player9">
+        <input type="text" name="player10">
+    </div>
+    <div id="button-container">
+        <button type="submit">Generate Plot</button>
+    </div>
+</form>
+
+
+{% if img_data %}
+<div id="image-container">
+    <img src="{{ img_data }}" alt="Percentile Plot of League Performance">
+</div>
+{% endif %}
+
+This graph shows the correct answers of individual players relative to their peers in their rundle, other rundles, and
+the league at large. Performances above the 80th percentile in your rundle should give you a good chance for promotion,
+and performances below the 20th should put you at risk for relegation.
+</body>
+</html>
