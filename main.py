@@ -126,6 +126,7 @@ def main(season=88, matchDay=15, data=None, ax=None, pals=None):
     fig.savefig(img_io, format='png', dpi=200)
     img_io.seek(0)
     img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+    plt.close()
     return img_base64
 
 
