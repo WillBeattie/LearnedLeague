@@ -6,19 +6,6 @@ import numpy as np
 from scipy import stats
 
 
-def load(season, matchDay):
-    if not data:
-        title = 'LL' + str(season) + ' Leaguewide MD' + str(matchDay)
-        path = 'LL' + str(season) + '_Leaguewide_' + title.split(' ')[-1] + '.csv'
-        try:
-            data = pd.read_csv(path, encoding='ISO-8859-1', index_col=2)
-        except FileNotFoundError:
-            try:
-                data = pd.read_csv('C:/users/wbeattie/downloads/' + path, encoding='ISO-8859-1', index_col=2)
-            except FileNotFoundError:
-                print('File not found')
-                return
-
 def main(season=88, matchDay=15, data=None, ax=None):
     if not data:
         title = 'LL' + str(season) + ' Leaguewide MD' + str(matchDay)
