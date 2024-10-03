@@ -3,6 +3,7 @@ import io
 import pickle
 import pandas as pd
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
@@ -135,47 +136,6 @@ def annotate(season=88, matchDay=15):
         fig = pickle.load(f'res/{path}', 'rb')
     except FileNotFoundError:
         print('Error, no pickled Figure available')
-
-
-def DE(data):
-    rundles = ['A', 'B', 'C', 'D', 'E', 'R']
-    rData = []
-    for rundle in rundles:
-        run = data['Rundle']
-        inRundle = [x[0] == rundle for x in run]
-        rData.append(data[inRundle])
-    for r, d in zip(rundles, rData):
-        x, y = d['CAA'], d['DE']
-
-        x = [caa + np.random.rand() for caa in x]
-        y = [de + (0.5 - np.random.rand()) * .1 for de in y]
-        plt.scatter(x, y, label='Rundle ' + r, s=10, alpha=0.5)
-    pals = ['GeorgasP', 'GrekF', 'GrekL', 'QuinlanK', 'BeattieW', 'ReynenG', 'JenningsK']
-
-    markers = ['^', 'o', '*', 'h', 'p', '.', 'P']
-    for m, pal in zip(markers, pals):
-        plt.scatter(data['CAA'][pal], data['DE'][pal], s=100, marker=m, color='black', label=pal)
-
-    run = data['Rundle']
-    notR = [x[0] != 'R' for x in run]
-    notR = data[notR]
-    bestFit = np.polyfit(notR['CAA'], notR['DE'], 1)
-    print(bestFit)
-    plt.plot(np.linspace(0, max(data['CAA']), 10), [bestFit[1] + x * bestFit[0] for x in np.linspace(10, 50, 10)],
-             color='black')
-    ax.legend()
-    ax.set_xlabel('Correct Answers Allowed')
-    ax.set_ylabel('Defensive Efficiency')
-    ax.set_title('Does Defense Get Easier with Strong Opponents?')
-
-
-def multiPlot():
-    days = ['9', '10', '11', '12', '13']
-    fig, ax = plt.subplots(1, len(days))
-
-    for i, day in enumerate(days):
-        data = pd.read_csv('LL84_Leaguewide_MD' + day + '.csv', encoding='ISO-8859-1', index_col=2)
-        main(data, ax=ax[i])
 
 
 if __name__ == "__main__":
