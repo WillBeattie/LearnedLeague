@@ -8,7 +8,12 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    print(f"Request from IP: {request.remote_addr}, User-Agent: {request.headers.get('User-Agent')}")
+    user_agent = request.headers.get('User-Agent')
+
+    # Ignore health check requests from Render
+    if user_agent == 'Go-http-client/1.1':
+        return '', 204  # Respond with 204 No Content to indicate success without logging
+
     t_start = time.time()
     if request.method == 'POST':
         players = [request.form.get(f'player{i}') for i in range(1, 11)]
