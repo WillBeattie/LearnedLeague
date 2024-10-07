@@ -76,10 +76,18 @@ def main(season=88, matchDay=15, data=None, pals=None):
     # Plot individuals on their rundle's percentile curve, along with a vertical line to show how they'd do in other
     # rundles
 
-    ucs = [[char for char in pal if char.isupper()] for pal in pals if pal in list(data.index.values)]
-    pals = {p: f'${U[0]}_{U[1]}$' for p, U in zip(pals, ucs)}
+    active_players = [p for p in pals if p in list(data.index.values)]
+    upper_case_chars = {pal: [char for char in pal if char.isupper()] for pal in active_players}
 
-    active_players = [p for p in pals.keys() if p in list(data.index.values)]
+    marker_dict = {}
+    for active_player in active_players:
+        ucs = upper_case_chars[active_player]
+        if len(ucs)>=2:
+            marker_dict[active_player] = f'${ucs[0]}_{ucs[1]}$'
+        elif ucs:
+            marker_dict[active_player] = f'${ucs[0]}$'
+        else:
+            marker_dict[active_player] = '*' # Default fallback for a no-upper-case player
 
     def alphanum_key(s):
         return [(0, char.lower()) if char.isalpha() else (1, char) for char in s]
@@ -87,12 +95,14 @@ def main(season=88, matchDay=15, data=None, pals=None):
     active_players = sorted(active_players, key=alphanum_key)
 
     active_players = sorted(active_players, key=lambda x: (data.loc[x, 'Rundle Group'], alphanum_key(x)))
-    for i, pal in enumerate(active_players):
-        myRundle = data['Rundle Group'][pal]
-        myScore = data['QPct'][pal]
-        myPercent = data['Percentile'][pal]
 
-        ax.scatter(myScore, myPercent, color='C' + str(rundles.index(myRundle)), marker=pals[pal], label=pal, s=200)
+    for active_player in active_players:
+        myRundle = data['Rundle Group'][active_player]
+        myScore = data['QPct'][active_player]
+        myPercent = data['Percentile'][active_player]
+
+        ax.scatter(myScore, myPercent, color='C' + str(rundles.index(myRundle)), marker=marker_dict[active_player],
+                   label=active_player, s=200)
         ax.axvline(myScore, color='C' + str(rundles.index(myRundle)), alpha=0.35, linestyle=':')
 
     # Patches indicating relegation and promotion
