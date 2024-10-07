@@ -25,15 +25,17 @@ def index():
         img_base64 = main.main(season=102, matchDay=25, pals=players)
 
     else:
+        players = ['']*12
         with open('res/Default.png', 'rb') as img:
             img_base64 = base64.b64encode(img.read()).decode('utf-8')
 
     img_data = f"data:image/png;base64,{img_base64}"
     print(time.time() - t_start)
-    return render_template('index.html', img_data=img_data)
+    players = players + [''] * (12 - len(players))  # Make sure we have 12 items for pre-populating input fields
+    return render_template('index.html', img_data=img_data, input_values=players)
 
 
 if __name__ == '__main__':
-    # port = int(environ.get("PORT", 5000))  # Use the port from environment variable, default to 5000
-    # app.run(host='0.0.0.0', port=port)
-    app.run(debug=True)
+    port = int(environ.get("PORT", 5000))  # Use the port from environment variable, default to 5000
+    app.run(host='0.0.0.0', port=port)
+    # app.run(debug=True)

@@ -75,18 +75,13 @@
 <h1> LearnedLeague Performance Plotter</h1>
 <form id="dynamicForm" method="POST">
     <div id="input-container">
-        <input type="text" name="player1" placeholder="Enter Player Name(s)">
-        <input type="text" name="player2">
-        <input type="text" name="player3">
-        <input type="text" name="player4">
-        <input type="text" name="player5">
-        <input type="text" name="player6">
-        <input type="text" name="player7">
-        <input type="text" name="player8">
-        <input type="text" name="player9">
-        <input type="text" name="player10">
-        <input type="text" name="player11">
-        <input type="text" name="player12">
+        {% for value in input_values %}
+
+            <input type="text"
+                   name="player{{ loop.index }}"
+                   value="{{ value }}"
+                   {% if loop.index ==1 and not value %} placeholder="Enter Player Name(s)" {% endif %}>
+        {% endfor %}
     </div>
     <div id="button-container">
         <button type="submit">Generate Plot</button>
