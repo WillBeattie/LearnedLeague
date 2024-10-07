@@ -17,6 +17,12 @@
             text-align: center;
         }
 
+        #footer {
+            font-size: 12px;
+            align-items: left;
+            margin: 10px 10px;
+        }
+
         #image-container {
             width: 100%;
             margin: 5px 0;
@@ -79,6 +85,8 @@
         <input type="text" name="player8">
         <input type="text" name="player9">
         <input type="text" name="player10">
+        <input type="text" name="player11">
+        <input type="text" name="player12">
     </div>
     <div id="button-container">
         <button type="submit">Generate Plot</button>
@@ -92,8 +100,12 @@
 </div>
 {% endif %}
 
-This graph shows the correct answers of individual players relative to their peers in their rundle, other rundles, and
-the league at large. Performances above the 80th percentile in your rundle should give you a good chance for promotion,
-and performances below the 20th should put you at risk for relegation.
+This graph shows the full-season correct answer % of individual players relative to their peers in their rundle, other
+rundles, and the league at large. Performances above the 80th percentile in your rundle should give you a good chance
+for promotion, while performances below the 20th should put you at risk for relegation.
+
+<div id="footer">
+    <a href="https://github.com/WillBeattie/LearnedLeague">Source code on github</a>
+</div>
 </body>
 </html>

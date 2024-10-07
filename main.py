@@ -75,31 +75,9 @@ def main(season=88, matchDay=15, data=None, pals=None):
 
     # Plot individuals on their rundle's percentile curve, along with a vertical line to show how they'd do in other
     # rundles
-    if not pals:
-        pals = {'GeorgasP': '$\P$',
-                'GrekF': '$\Finv$',
-                'GrekL': '*',
-                'QuinlanK': '$K_Q$',
-                'BeattieW': '$\u263C$',
-                'ReynenG': '$\mathrm{\mathbb{G}}$',
-                'ReynenM': '$\mathcal{M}$',
-                'MillsH': r'$\hslash$',
-                'ThompsonA5': '$@$',
-                'BaechlerC': '$\copyright$',
-                'JenningsK': 'P',
-                'SimpsonF': '$\oiiint$',
-                'Bohr-LeeD': '$\\flat$',
-                'deGrootD': '$\spadesuit$',
-                'ChurchM2': r'$\yen$',
-                'SchacterC': 'r$\mathbb{U}$',
-                'BarratA': '$\\forall$',
-                'ChalykoffN': '$\u2118$',
-                'FoxA6': '$\u26BE$',
-                'JainA1933': r'$\$$',
-                }
-    else:
-        ucs = [[char for char in pal if char.isupper()] for pal in pals if pal in list(data.index.values)]
-        pals = {p: f'${U[0]}_{U[1]}$' for p, U in zip(pals, ucs)}
+
+    ucs = [[char for char in pal if char.isupper()] for pal in pals if pal in list(data.index.values)]
+    pals = {p: f'${U[0]}_{U[1]}$' for p, U in zip(pals, ucs)}
 
     active_players = [p for p in pals.keys() if p in list(data.index.values)]
 
@@ -144,7 +122,7 @@ def main(season=88, matchDay=15, data=None, pals=None):
     plt.tight_layout()
     img_io = io.BytesIO()
 
-    base_fig.savefig(img_io, format='png', dpi=200)
+    base_fig.savefig(img_io, format='png', dpi=100)
     img_io.seek(0)
     img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
     plt.close()
