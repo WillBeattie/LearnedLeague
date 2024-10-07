@@ -6,7 +6,7 @@ import time
 import main
 
 app = Flask(__name__)
-
+N_PLAYERS = 12
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -18,20 +18,20 @@ def index():
 
     t_start = time.time()
     if request.method == 'POST':
-        players = [request.form.get(f'player{i}') for i in range(1, 11)]
+        players = [request.form.get(f'player{i}') for i in range(1, N_PLAYERS + 1)]
         players = [p for p in players if p]
         if players is None:
             players = []
         img_base64 = main.main(season=102, matchDay=25, pals=players)
 
     else:
-        players = ['']*12
+        players = ['']*N_PLAYERS
         with open('res/Default.png', 'rb') as img:
             img_base64 = base64.b64encode(img.read()).decode('utf-8')
 
     img_data = f"data:image/png;base64,{img_base64}"
     print(time.time() - t_start)
-    players = players + [''] * (12 - len(players))  # Make sure we have 12 items for pre-populating input fields
+    players = players + [''] * (N_PLAYERS - len(players))  # Make sure we have 12 items for pre-populating input fields
     return render_template('index.html', img_data=img_data, input_values=players)
 
 
