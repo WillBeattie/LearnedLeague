@@ -1,6 +1,7 @@
 import base64
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
+from markupsafe import escape
 from os import environ
 import time
 import main
@@ -9,20 +10,34 @@ app = Flask(__name__)
 N_PLAYERS = 12
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/<user_input>', methods=['GET','POST'])
+def index(user_input=None):
     user_agent = request.headers.get('User-Agent')
 
     # Ignore health check requests from Render
     if user_agent == 'Go-http-client/1.1':
         return '', 204  # Respond with 204 No Content to indicate success without logging
 
+    print(request.method)
     t_start = time.time()
-    if request.method == 'POST':
+    if user_input and request.method=='GET':
+        safe_input = escape(user_input)
+        players = safe_input.split(';')
+        img_base64 = main.main(season=102, matchDay=25, pals=players)
+
+    elif request.method == 'POST':
         players = [request.form.get(f'player{i}') for i in range(1, N_PLAYERS + 1)]
         players = [p for p in players if p]
+        print(players)
         if players is None:
-            players = []
-        img_base64 = main.main(season=102, matchDay=25, pals=players)
+            players = [''] * N_PLAYERS
+            with open('res/Default.png', 'rb') as img:
+                img_base64 = base64.b64encode(img.read()).decode('utf-8')
+
+        else:
+            players_url = ';'.join(players)
+            return redirect(url_for('index', user_input = escape(players_url)))
+            # img_base64 = main.main(season=102, matchDay=25, pals=players)
 
     else:
         players = ['']*N_PLAYERS
