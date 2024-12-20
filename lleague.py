@@ -94,9 +94,4 @@ def main(season=103, matchDay=25, data=None, ax=None):
 
 
 if __name__ == "__main__":
-    """
-    fig, ax = plt.subplots(3, 1, figsize=(12, 14))
-    for i, n in enumerate([84, 85, 86]):
-        data = main(season=n, matchDay=25, ax=ax[i])
-    """
     main()

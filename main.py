@@ -57,7 +57,7 @@ def prep_resources(season, matchDay):
     pickle.dump(fig, open(f'res/{season}-{matchDay}-basefig.p', 'wb'))
 
 
-def main(season=88, matchDay=15, data=None, pals=None):
+def main(season=103, matchDay=21, data=None, pals=None):
     try:
         base_fig = pickle.load(open(f'res/{season}-{matchDay}-basefig.p', 'rb'))
         data = pd.read_csv(f'res/{season}-{matchDay}-filtered_df.csv', index_col=0)
