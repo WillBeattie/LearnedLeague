@@ -23,7 +23,7 @@ def index(user_input=None):
     if user_input and request.method=='GET':
         safe_input = escape(user_input)
         players = safe_input.split(';')
-        img_base64 = main.main(season=102, matchDay=25, pals=players)
+        img_base64 = main.main(season=103, matchDay=25, pals=players)
 
     elif request.method == 'POST':
         players = [request.form.get(f'player{i}') for i in range(1, N_PLAYERS + 1)]
