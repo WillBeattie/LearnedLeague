@@ -6,7 +6,7 @@ import numpy as np
 from scipy import stats
 
 
-def main(season=88, matchDay=15, data=None, ax=None):
+def main(season=103, matchDay=25, data=None, ax=None):
     if not data:
         title = 'LL' + str(season) + ' Leaguewide MD' + str(matchDay)
         path = 'LL' + str(season) + '_Leaguewide_' + title.split(' ')[-1] + '.csv'
@@ -14,7 +14,7 @@ def main(season=88, matchDay=15, data=None, ax=None):
             data = pd.read_csv(path, encoding='ISO-8859-1', index_col=2)
         except FileNotFoundError:
             try:
-                data = pd.read_csv('C:/users/wbeattie/downloads/' + path, encoding='ISO-8859-1', index_col=2)
+                data = pd.read_csv('C:/users/willj/downloads/' + path, encoding='ISO-8859-1', index_col=2)
             except FileNotFoundError:
                 print('File not found')
                 return
@@ -50,7 +50,7 @@ def main(season=88, matchDay=15, data=None, ax=None):
     pals = {'GeorgasP': '$\P$', 'GrekF': '$\Finv$', 'GrekL': '*', 'QuinlanK': '$K_Q$', 'BeattieW': '$\u263C$',
             'ReynenG': '$\mathrm{\mathbb{G}}$', 'ReynenM': '$\mathcal{M}$', 'MillsH': r'$\hslash$', 'ThompsonA5': '$@$',
             'BaechlerC': '$\copyright$', 'JenningsK': 'P', 'SimpsonF': '$\oiiint$', 'Bohr-LeeD': '$\\flat$',
-            'deGrootD': '$\spadesuit$'}
+            'deGrootD': '$\spadesuit$', 'JainA1933':'$\$$', 'FoxA6':'$A_F$'}
     for i, pal in enumerate(pals):
         if pal not in list(data.index.values):
             continue
@@ -86,13 +86,11 @@ def main(season=88, matchDay=15, data=None, ax=None):
     ax.set_xticklabels([round(100 * x) for x in xticks])
     ax.set_yticklabels([round(100 * y) for y in yticks])
 
-    # plt.tight_layout()
-    # plt.savefig(title+'.png', dpi=200)
+    plt.tight_layout()
+    plt.savefig(title+'.png', dpi=200)
 
     return data
 
-def prepare():
-    return
 
 
 if __name__ == "__main__":
